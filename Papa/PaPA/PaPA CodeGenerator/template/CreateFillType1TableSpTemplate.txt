@@ -1,0 +1,65 @@
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author: PaPA CodeGenerator
+-- =============================================
+Create PROCEDURE [dbo].[papafuncapp_addrows_QQsafeTableNameQQ]
+(
+    -- Add the parameters for the stored procedure here
+    @tvpTable QQTableTypeNameQQ ReadOnly,
+	@emailId VARCHAR(255)
+)
+AS
+BEGIN
+    BEGIN TRANSACTION;
+    SAVE TRANSACTION MySavePoint;
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON
+	Declare @Scenario VARCHAR(255);
+	Declare @channel VARCHAR(255);
+	BEGIN TRY 
+	set @Scenario = (select Distinct TOP(1) [Scenario] from @tvpTable);
+	set @channel = (select Distinct TOP(1) [channel] from @tvpTable where [Scenario] = @Scenario);
+	--THROW 60000,@channel,1;
+	IF EXISTS (SELECT * FROM QQTableNameQQ(nolock) WHERE [Scenario] = @Scenario AND [Channel] = @channel)
+	BEGIN
+	
+	INSERT INTO QQDeletedTableNameQQ 
+	SELECT QQColumnNameQQ 
+        [UpdatedBy],
+		[UpdatedTimeStamp],
+		@emailId,
+		CURRENT_TIMESTAMP
+	FROM QQTableNameQQ
+	WHERE [Scenario] = @Scenario
+	AND [Channel] = @channel;
+
+	DELETE FROM QQTableNameQQ
+	WHERE [Scenario] = @Scenario
+	AND [Channel] = @channel;
+	END
+	SELECT QQColumnNameQQ
+		@emailId as [UpdatedBy],
+		CURRENT_TIMESTAMP as [UpdatedTimeStamp]
+		into #temp
+	FROM @tvpTable
+	where [Scenario] = @Scenario
+	AND [Channel] = @channel;
+	
+	insert into QQTableNameQQ 
+	select * from #temp
+
+	COMMIT TRANSACTION 
+	END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION MySavePoint;
+        END
+    END CATCH
+END
+GO

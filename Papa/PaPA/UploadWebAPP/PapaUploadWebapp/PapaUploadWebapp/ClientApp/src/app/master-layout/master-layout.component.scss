@@ -1,0 +1,54 @@
+@import "../../styles.scss";
+    
+.ml-container{
+  @include full-relative;
+  background: url("~src/assets/Images/Papa_Webpage_BG_image.jpg") no-repeat center;
+  background-size: 100% 100%;
+  .ml-bottle-container{
+    @media screen and (max-width: $small) {
+      @include full-relative(95%,0%);
+    }
+    @media screen and (min-width: $medium) {
+      @include full-relative(95%,30%);
+    }
+    @include full-relative(95%,20%);
+    background: url("~src/assets/Images/Papa Webpage_logo with coke bottle.png") no-repeat center;
+    background-size: contain;
+    overflow: hidden;
+  }
+  .ml-nav-container{
+    @media screen and (max-width: $small) {
+      @include full-relative(10%);
+    }
+    @media screen and (min-width: $medium) {
+      @include full-relative(10%,70%);
+    }
+    @include full-relative(10%,80%);
+    overflow: hidden;
+  }
+  .ml-body-container{
+    @media screen and (max-width: $small) {
+      @include full-relative(85%);
+    }
+    @media screen and (min-width: $medium) {
+      @include full-relative(85%,70%);
+    }
+    @include full-relative(85%,80%);
+    overflow: auto;
+  }
+  .ml-footer-container{
+    @include full-relative(5%);
+    overflow: hidden;
+  }
+}
+::ng-deep.material-icons{
+  font-feature-settings: 'liga';
+}
+
+::ng-deep.success-snackbar {
+  white-space: pre-wrap;
+}
+
+::ng-deep.mat-app-background{
+  background: transparent;
+}

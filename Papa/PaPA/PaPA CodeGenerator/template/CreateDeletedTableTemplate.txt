@@ -1,0 +1,12 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE QQTableNameQQ(
+	QQColumnNameQQ,
+	[createdBy] [varchar](255) NULL,
+	[CreatedTimestamp] [datetime] NULL,
+	[ReplacedBy] [varchar](255) NULL,
+	[ReplacedTimestamp] [datetime] NULL
+) ON [PRIMARY]
+GO

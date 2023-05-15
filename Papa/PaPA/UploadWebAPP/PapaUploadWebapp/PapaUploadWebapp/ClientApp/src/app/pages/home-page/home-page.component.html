@@ -1,0 +1,167 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-step [stepControl]="loginFormGroup" [editable]="isEditable">
+    <div class="login-step">
+      <ng-template matStepLabel>SignIn</ng-template>
+      <div *ngIf="!signedIn">
+        <div class="box-container">
+          <div class="box">
+            <div class="box-icon-container">
+              <div class="login-inbox-icon"></div>
+            </div>
+            <div class="box-text-container">
+              <mat-label>Please <b style="cursor: pointer;" (click)="forceSignIn()">Sign In</b> with your cola-cola ID
+              </mat-label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="signedIn">
+        <div class="box-container">
+          <div class="box">
+            <div class="box-icon-container">
+              <div class="loggedin-inbox-icon"></div>
+            </div>
+            <div class="box-text-container">
+              <div class="line-item" *ngIf="userDetails; else spinme" style="left: 0%;">
+                <span>Welcome <b>{{userDetails.name}}</b>{{goForward(0)}}</span>
+              </div>
+              <ng-template #spinme>
+                <div class="line-item">
+                  <mat-spinner color="warn"></mat-spinner>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-step>
+  <mat-step [stepControl]="fileValidFormGroup" [editable]="isEditable">
+    <form [formGroup]="uploadFileFormGroup">
+      <ng-template matStepLabel>Drop File</ng-template>
+      <div class="drop-zone" file-drop (files)="submit($event)">
+        <div class="box-container">
+          <div class="box">
+            <div class="box-icon-container">
+              <div class="dragit-inbox-icon"></div>
+            </div>
+            <div class="box-text-container">
+              <input id="file" type="file" formControlName="files" (change)="submit(uploadFileFormGroup.value.files)"
+                multiple required>
+              <label for="file"><strong>Choose a file</strong><span class="dragndrop"> or drag it here</span>.</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div div class="line-item" *ngIf="isFileValid">
+        <button class="drop-file-button" mat-raised-button color="primary" [matBadge]="filelist.length"
+          matBadgePosition="after" matBadgeColor="warn" mat-button [matMenuTriggerFor]="menu">
+          Manage Files
+        </button>
+        <mat-menu #menu="matMenu" yPosition="above">
+          <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+            <div mat-menu-item class="example-box" *ngFor="let file of filelist; index as i;" cdkDrag>
+              <div (click)="$event.stopPropagation();" class="example-item">
+                <span [title]="file.name"> {{file.name}}</span>
+                <div mat-raised-button class="delete-button" title="Remove from list"
+                  (click)="$event.stopPropagation();removeFileFromList(file,i);">
+              </div>
+              </div>
+            </div>
+          </div>
+        </mat-menu>
+        <button class="drop-file-button" mat-raised-button color="primary" (click)="createCustomFileInfo()">Start
+          Upload</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="uploadingFormGroup" [editable]="isEditable">
+    <form [formGroup]="uploadingFormGroup">
+      <ng-template matStepLabel>Uploading</ng-template>
+      <div class="expanson-holder">
+        <mat-accordion>
+          <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" *ngIf="getFileStatus('uploading')>0">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Uploading files
+              </mat-panel-title>
+              <mat-panel-description>
+                {{getFileStatus('uploading')}} Uploading
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="expansion-body">
+              <ng-container *ngFor="let cf of customfileList">
+                <mat-card class="file-card" *ngIf="cf.status=='uploading'">
+                  <span class="file-card-name">{{cf.file.name}}</span>
+                  <mat-progress-bar mode="determinate" [value]="(cf.successOperationCounts/cf.totalOperationCounts)*100" class="file-card-spinner"></mat-progress-bar>
+                </mat-card>
+              </ng-container>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" *ngIf="getFileStatus('success')>0">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Uploaded files
+              </mat-panel-title>
+              <mat-panel-description>
+                {{getFileStatus('success')}} Success
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="expansion-body">
+              <ng-container *ngFor="let cf of customfileList">
+                <mat-card class="file-card" *ngIf="cf.status=='success'">
+                  <span class="file-card-name">{{cf.file.name}}</span>
+                </mat-card>
+              </ng-container>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" *ngIf="getFileStatus('failed')>0">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Failed
+              </mat-panel-title>
+              <mat-panel-description>
+                {{getFileStatus('failed')}} Failed
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="expansion-body">
+              <ng-container *ngFor="let cf of customfileList">
+                <mat-card class="file-card" *ngIf="cf.status=='failed'">
+                  <span class="file-card-name">{{cf.file.name}}</span>
+                  <div class="file-card-retry-block">
+                    <mat-label class="file-card-retry-failed-info">{{getFailedInfo(cf)}}</mat-label>
+                    <div class="file-card-retry-upload" mat-raised-button title="Retry uploading" (click)="retryUpload(cf);"></div>
+                    <div class="file-card-retry-reason" mat-raised-button [title]="cf.message"></div>
+                  </div>
+                </mat-card>
+              </ng-container>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+      <div class="line-item" *ngIf="IsSkipUpload">
+        <a class="drop-file-button" mat-raised-button color="primary" [href]="downloadJsonHref" download="status.txt">Download log</a>
+        <button class="drop-file-button" mat-raised-button color="primary" (click)="resetStepper();stepper.reset();">Upload New Files</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <div class="done-step">
+    <ng-template matStepLabel>Done</ng-template>
+    <div class="box-container">
+      <div class="box">
+        <div class="box-icon-container">
+          <div class="done-inbox-icon"></div>
+        </div>
+        <div class="box-text-container">
+          <mat-label class="done-label"><span class="done-icon"></span>Successfully <b>Uploaded</b></mat-label>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="line-item">
+      <a class="drop-file-button" mat-raised-button color="primary" [href]="downloadJsonHref" download="status.txt">Download log</a>
+      <button class="drop-file-button" mat-raised-button color="primary"(click)="resetStepper();stepper.reset();">Upload New Files</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>

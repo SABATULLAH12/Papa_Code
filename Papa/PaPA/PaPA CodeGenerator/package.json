@@ -1,0 +1,23 @@
+{
+  "name": "papa-codegenerator",
+  "version": "1.0.0",
+  "description": "it takes table strucutre and generate relevant function app code and sql code.",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "keywords": [
+    "automated-code-generator"
+  ],
+  "author": "rahul kumar",
+  "license": "ISC",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.22",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.3"
+  }
+}

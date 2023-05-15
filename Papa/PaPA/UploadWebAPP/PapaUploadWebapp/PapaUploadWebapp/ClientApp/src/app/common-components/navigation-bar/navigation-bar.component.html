@@ -1,0 +1,13 @@
+<div class="nb-container">
+  <div class="logo">
+  </div>
+  <div class="option">
+    <button mat-button class="logout-icon" (click)="logout()" title="logout">
+    </button>
+  </div>
+  <div class="nameContainer" *ngIf="ShowUserDetails">
+    <div class="account-icon">
+    </div>
+    <span [title]="userDetails.name">{{userDetails.name}}</span>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+GO
+DROP PROCEDURE IF EXISTS [dbo].[papafuncapp_addrows_QQsafeTableNameQQ]
+GO
+DROP TYPE IF EXISTS QQsafedboTableNameQQ
+GO
+DROP TABLE IF EXISTS QQTableNameQQ
+GO
+DROP TABLE IF EXISTS QQDeletedTableNameQQ
+GO
